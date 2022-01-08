@@ -20,6 +20,15 @@ class BigQuestionsTableSeeder extends Seeder
             [
                 'name' => '広島の難読地名クイズ',
             ],
+            [
+                'name' => '神奈川の難読地名クイズ',
+            ],
+            [
+                'name' => '千葉の難読地名クイズ',
+            ],
+            [
+                'name' => '北海道の難読地名クイズ',
+            ],
         ];
 
         $now = Carbon::now();

@@ -31,7 +31,7 @@ class AdminController extends Controller
     }
 
     public function index() {
-        $big_questions = BigQuestion::all();;
+        $big_questions = BigQuestion::orderBy('sort')->get();
         $questions = Question::all();
         return view('admin.index', compact('big_questions', 'questions'));
     }
@@ -39,6 +39,23 @@ class AdminController extends Controller
     public function editIndex($id) {
         $question = Question::find($id);
         return view('admin.edit.id', compact('question'));
+    }
+
+    public function savesort(Request $request) {
+        // dd($request->listids);
+
+        // 2, 3, 4, 5, 1
+        $list = explode(',', $request->listids);
+        // dd($list);
+
+        //ID   2, 3, 4, 5, 1
+        //SORT 0, 1, 2, 3, 4  
+        foreach ($list as $index => $value) {
+            $bigquestion = BigQuestion::find($value);
+            $bigquestion->sort = $index;
+            $bigquestion->save();
+        }
+        return redirect('/admin');
     }
 
     public function edit(Request $request, $id) {

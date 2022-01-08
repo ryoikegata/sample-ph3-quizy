@@ -8,21 +8,49 @@
 </head>
 
 <body>
-    <div><a href="/admin/big_question/add">大問追加</a></div>
-    <ul>
-        @foreach($big_questions as $big_question)
-        <li>{{ $big_question->name }}</li>
-        <div>
-            @foreach($questions->where('big_question_id', $big_question->id) as $question)
-            <a href="/admin/edit/{{ $question->id }}" style="text-decoration: none;">
-                <img src="/img/{{ $question->image }}" width="200">
-            </a>
-            @endforeach
-            <a href="/admin/add/{{ $big_question->id }}">設問追加</a>
-            <a href="/admin/big_question/delete/{{ $big_question->id }}">大問削除</a>
-        </div>
+    <ul class="sortable">
+        @foreach($big_questions as $key => $big_question)
+        <li id="{{ $big_question->id }}" draggable="true">{{ $big_question->name }}</li>
         @endforeach
     </ul>
+
+    <form action="/admin/savesort" method="post">
+        @csrf
+        <input type="hidden" id="listids" name="listids" />
+        <input id="button" type="button" value="並び替えを保存">
+    </form>
 </body>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+
+<script>
+    document.querySelectorAll('.drag-list li').forEach(elm => {
+        elm.ondragstart = function() {
+            event.dataTransfer.setData('text/plain', event.target.id);
+        };
+        elm.ondragover = function() {
+            event.preventDefault();
+            this.style.borderTop = '2px solid blue';
+        };
+        elm.ondragleave = function() {
+            this.style.borderTop = '';
+        };
+        elm.ondrop = function() {
+            event.preventDefault();
+            let id = event.dataTransfer.getData('text/plain');
+            let elm_drag = document.getElementById(id);
+            this.parentNode.insertBefore(elm_drag, this);
+            this.style.borderTop = '';
+        };
+    });
+
+    $(".sortable").sortable();
+    $(".sortable").disableSelection();
+    $('#button').on('click', function() {
+        var listIds = $(".sortable").sortable("toArray");
+        $("#listids").val(listIds);
+        $("form").submit();
+    });
+</script>
 
 </html>

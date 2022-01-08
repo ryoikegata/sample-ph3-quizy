@@ -16,6 +16,9 @@ Route::get('/quiz/{id}', 'QuizController@index')->name('quiz.id');
 Route::get('/admin/login', 'AdminController@loginIndex');
 Route::post('/admin/login', 'AdminController@login');
 Route::get('/admin', 'AdminController@index');
+
+Route::post('/admin/savesort', 'AdminController@savesort');
+
 Route::get('/admin/edit/{id}', 'AdminController@editIndex');
 Route::post('/admin/edit/{id}', 'AdminController@edit');
 Route::get('/admin/add/{id}', 'AdminController@addIndex');
