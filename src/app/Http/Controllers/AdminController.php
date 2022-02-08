@@ -11,11 +11,13 @@ use App\Choice;
 
 class AdminController extends Controller
 {
-    public function loginIndex() {
+    public function loginIndex()
+    {
         return view('admin.login');
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $userId = $request->userId;
         $password = $request->password;
         if (!AdminUser::where('user_id', $userId)->first()) {
@@ -30,26 +32,22 @@ class AdminController extends Controller
         }
     }
 
-    public function index() {
+    public function index()
+    {
         $big_questions = BigQuestion::orderBy('sort')->get();
         $questions = Question::all();
         return view('admin.index', compact('big_questions', 'questions'));
     }
 
-    public function editIndex($id) {
+    public function editIndex($id)
+    {
         $question = Question::find($id);
         return view('admin.edit.id', compact('question'));
     }
 
-    public function savesort(Request $request) {
-        // dd($request->listids);
-
-        // 2, 3, 4, 5, 1
+    public function savesort(Request $request)
+    {
         $list = explode(',', $request->listids);
-        // dd($list);
-
-        //ID   2, 3, 4, 5, 1
-        //SORT 0, 1, 2, 3, 4  
         foreach ($list as $index => $value) {
             $bigquestion = BigQuestion::find($value);
             $bigquestion->sort = $index;
@@ -58,10 +56,11 @@ class AdminController extends Controller
         return redirect('/admin');
     }
 
-    public function edit(Request $request, $id) {
+    public function edit(Request $request, $id)
+    {
         $choices = Question::find($id)->choices;
         foreach ($choices as $index => $choice) {
-            $choice->name = $request->{'name'.$index};
+            $choice->name = $request->{'name' . $index};
             if ($index === intval($request->valid)) {
                 $choice->valid = true;
             } else {
@@ -72,14 +71,16 @@ class AdminController extends Controller
         return redirect('/admin');
     }
 
-    public function addIndex($id) {
+    public function addIndex($id)
+    {
         $big_question = BigQuestion::find($id);
         return view('admin.add.id', compact('big_question'));
     }
 
-    public function add(Request $request, $id) {
+    public function add(Request $request, $id)
+    {
         $file = $request->file;
-        $fileName = $request->{'name'.$request->valid} . '.png';
+        $fileName = $request->{'name' . $request->valid} . '.png';
         $path = public_path('img/');
         $file->move($path, $fileName);
 
@@ -105,33 +106,37 @@ class AdminController extends Controller
         return redirect('/admin');
     }
 
-    public function bigQuestionAddIndex() {
+    public function bigQuestionAddIndex()
+    {
         return view('admin.big_question.add');
     }
-    public function bigQuestionAdd(Request $request) {
+    public function bigQuestionAdd(Request $request)
+    {
         BigQuestion::create([
             'name' => $request->title
         ]);
         return redirect('/admin');
     }
 
-    public function bigQuestionDeleteIndex($id) {
+    public function bigQuestionDeleteIndex($id)
+    {
         $big_question = BigQuestion::find($id);
         return view('admin.big_question.delete', compact('big_question'));
     }
 
-    public function bigQuestionDelete(Request $request, $big_question_id) {
+    public function bigQuestionDelete(Request $request, $big_question_id)
+    {
         $big_question = BigQuestion::find($big_question_id);
         $questions = $big_question->questions;
-        foreach($questions as $question){
+        foreach ($questions as $question) {
             $choices = $question->choices;
-            foreach($choices as $choice){
+            foreach ($choices as $choice) {
                 $choice->delete();
             }
             $question->delete();
         }
         $big_question->delete();
 
-        return redirect('/admin');  
+        return redirect('/admin');
     }
 }
