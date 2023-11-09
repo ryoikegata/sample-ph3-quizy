@@ -72,6 +72,15 @@ class AdminController extends Controller
     }
 
     public function add(Request $request, $id) {
+        $validator = Validator::make($request->all(), [
+            'name0' => 'required | max:20',
+            'name1' => 'required | max:20',
+            'name2' => 'required | max:20',
+            'valid' => 'required | integer | between:0,2',
+        ]);
+        if ($validator->fails()) {
+            return redirect('/admin')->withErrors($validator)->withInput();
+        }
         $file = $request->file;
         $fileName = $request->{'name'.$request->valid} . '.png';
         $path = public_path('img/');

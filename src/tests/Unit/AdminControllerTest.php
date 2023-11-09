@@ -2,12 +2,11 @@
 
 namespace Tests\Unit;
 
-use App\Choice;
+use App\BigQuestion;
 use Faker\Factory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 use Illuminate\Support\Str;
 
@@ -20,6 +19,10 @@ class AdminControllerTest extends TestCase
      *
      * @return void
      */
+
+
+
+
     public function test_edit()
     {
         $questionId = 1;
@@ -75,5 +78,30 @@ class AdminControllerTest extends TestCase
         // validが0〜2以外の場合、エラー
         $response = $this->post("/admin/edit/1", array_merge($normal, ['valid' => 4]));
         $response->assertSessionHasErrors('valid');
+    }
+
+
+    public function test_index () {
+        $faker = Factory::create();
+        $bigQuestionsTest = [
+            [
+                'name' => $faker->word,
+            ],
+            [
+                'name' => $faker->word,
+            ],
+        ];
+
+            // 初期状態として $bigQuestionsTest をデータベースに挿入
+    foreach ($bigQuestionsTest as $bigQuestion) {
+        DB::table('big_questions')->insert($bigQuestion);
+    }
+
+    // /admin を取得したときにデータが一緒に取得できているか確認
+    $response = $this->get('/admin');
+
+    foreach ($bigQuestionsTest as $bigQuestion) {
+        $response->assertSee($bigQuestion['name']);
+    }
     }
 }
