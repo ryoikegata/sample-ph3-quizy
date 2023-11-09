@@ -8,6 +8,7 @@ use App\AdminUser;
 use App\Question;
 use App\BigQuestion;
 use App\Choice;
+use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
@@ -42,9 +43,19 @@ class AdminController extends Controller
     }
 
     public function edit(Request $request, $id) {
-        $choices = Question::find($id)->choices;
+        $choices = Question::findOrFail($id)->choices;
+        $validator = Validator::make($request->all(), [
+            'name0' => 'required | max:20',
+            'name1' => 'required | max:20',
+            'name2' => 'required | max:20',
+            'valid' => 'required | integer | between:0,2',
+        ]);
+        if ($validator->fails()) {
+            return redirect('/admin')->withErrors($validator)->withInput();
+        }
         foreach ($choices as $index => $choice) {
             $choice->name = $request->{'name'.$index};
+            //$choiceを全て入力必須にしてからの場合はバリデージョンのエラーが出る
             if ($index === intval($request->valid)) {
                 $choice->valid = true;
             } else {
